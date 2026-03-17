@@ -21,6 +21,7 @@ A small Python command-line tool for a logistics company to track package shipme
   - `models.py` – `Package` class and basic validation helpers
   - `storage.py` – `ShipmentManager` for loading/saving shipments
   - `estimators.py` – helper functions for delivery estimates
+  - `reporting.py` – helpers for generating shipment summary reports
 - `tests/` – pytest-based unit tests for core functionality
 
 ## Installation
@@ -111,6 +112,18 @@ python -m shipment_tracker update-status PKG-001 delivered
 ```bash
 python -m shipment_tracker estimate 600 --priority express --shipping-date 2023-01-15
 ```
+
+### Generate a daily shipment summary report
+
+You can generate a simple text summary of shipments grouped by status and average delivery time:
+
+```bash
+python -m shipment_tracker daily-report --report-file ./reports/daily_summary.txt
+```
+
+If `--report-file` is omitted, the summary is written to `./shipment_summary.txt` in the current working directory.
+
+The report includes counts and average delivery times (in days) per status (e.g. `in_transit`, `delivered`, `returned`).
 
 ## JSON data format
 
