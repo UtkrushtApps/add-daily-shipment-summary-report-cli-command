@@ -13,6 +13,7 @@ from .models import (
 )
 from .estimators import estimate_delivery_date
 from .exceptions import ShipmentError, PackageNotFoundError
+from .reporting import generate_daily_summary
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -89,6 +90,18 @@ def build_parser() -> argparse.ArgumentParser:
         help="Planned shipping date (YYYY-MM-DD). Defaults to today.",
     )
     p_estimate.set_defaults(func=handle_estimate)
+
+    # daily-report
+    p_report = subparsers.add_parser(
+        "daily-report",
+        help="Generate a daily shipment summary report",
+    )
+    p_report.add_argument(
+        "--report-file",
+        type=Path,
+        help="Path to write the summary report (default: ./shipment_summary.txt)",
+    )
+    p_report.set_defaults(func=handle_daily_report)
 
     return parser
 
@@ -168,6 +181,13 @@ def handle_update_status(args: argparse.Namespace) -> None:
     manager = create_manager_from_args(args)
     pkg = manager.update_status(args.package_id, args.status)
     print(f"Updated package {pkg.package_id} to status {pkg.status}")
+
+
+def handle_daily_report(args: argparse.Namespace) -> None:
+    data_file = args.data_file
+    report_file = args.report_file or Path("shipment_summary.txt")
+    generate_daily_summary(data_file, report_file)
+    print(f"Daily shipment summary written to {report_file}")
 
 
 def handle_estimate(args: argparse.Namespace) -> None:
